@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { products as initialProducts } from '../data/dummyData';
 
@@ -68,40 +68,45 @@ const Products = () => {
         </select>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="border-b border-slate-100 bg-slate-50">
-              {['SKU','Product Name','Category','Brand / Model','HSN','GST%','Purchase Rate','Sales Rate','Margin%','Warranty','Install','Stock'].map((h,i)=>(
-                <th key={i} className="text-left text-slate-500 text-xs font-semibold uppercase tracking-wider px-3 py-3 whitespace-nowrap">{h}</th>
-              ))}
-            </tr></thead>
-            <tbody>
-              {filtered.map(p=>{
-                const m = (((p.salesRate-p.purchaseRate)/p.purchaseRate)*100).toFixed(1);
-                return (
-                  <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                    <td className="px-3 py-3 text-indigo-700 font-mono text-xs font-bold whitespace-nowrap">{p.code}</td>
-                    <td className="px-3 py-3 whitespace-nowrap truncate max-w-[200px]"><p className="text-slate-800 font-semibold truncate">{p.name}</p><p className="text-slate-400 text-xs truncate">{p.unit}</p></td>
-                    <td className="px-3 py-3 whitespace-nowrap"><Badge label={p.category} color="purple"/></td>
-                    <td className="px-3 py-3 text-slate-700 whitespace-nowrap truncate max-w-[150px]">{p.brand}<br/><span className="text-xs text-slate-400 truncate">{p.model}</span></td>
-                    <td className="px-3 py-3 text-slate-500 font-mono text-xs">{p.hsn}</td>
-                    <td className="px-3 py-3 text-slate-700 font-semibold">{p.gst}%</td>
-                    <td className="px-3 py-3 text-slate-700">{formatCurrency(p.purchaseRate)}</td>
-                    <td className="px-3 py-3 text-emerald-700 font-bold">{formatCurrency(p.salesRate)}</td>
-                    <td className="px-3 py-3 text-sky-700 font-bold">{m}%</td>
-                    <td className="px-3 py-3 text-slate-700">{p.warranty} mo</td>
-                    <td className="px-3 py-3"><Badge label={p.installRequired?'Yes':'No'} color={p.installRequired?'amber':'slate'}/></td>
-                    <td className="px-3 py-3 font-black text-sm">
-                      <span className={p.stock<5?'text-red-600':p.stock<10?'text-amber-600':'text-slate-800'}>{p.stock}</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={[
+          { label: 'SKU', render: p => <span className="font-mono text-indigo-700 font-bold">{p.code}</span> },
+          { label: 'Product Name', render: p => (
+            <div>
+              <p className="text-slate-800 font-semibold">{p.name}</p>
+              <p className="text-slate-400 text-[10px] uppercase font-bold">{p.unit}</p>
+            </div>
+          )},
+          { label: 'Category', render: p => <Badge label={p.category} color="purple"/> },
+          { label: 'Brand / Model', render: p => (
+            <div className="max-w-[150px] truncate">
+              <p className="text-slate-700 font-medium truncate">{p.brand}</p>
+              <p className="text-[10px] text-slate-400 truncate">{p.model}</p>
+            </div>
+          )},
+          { label: 'Rates (P/S)', render: p => (
+            <div className="text-xs">
+              <p className="text-slate-500 line-through opacity-70">{formatCurrency(p.purchaseRate)}</p>
+              <p className="text-emerald-700 font-bold">{formatCurrency(p.salesRate)}</p>
+            </div>
+          )},
+          { label: 'Margin', render: p => (
+            <div className="flex flex-col items-start">
+              <span className="text-sky-700 font-bold">{(((p.salesRate-p.purchaseRate)/p.purchaseRate)*100).toFixed(1)}%</span>
+              <span className="text-[10px] text-slate-400 font-medium">Profit</span>
+            </div>
+          )},
+          { label: 'Warranty', render: p => <span className="text-slate-600 font-medium">{p.warranty} mo</span> },
+          { label: 'Install', render: p => <Badge label={p.installRequired?'Yes':'No'} color={p.installRequired?'amber':'slate'}/> },
+          { label: 'Stock', render: p => (
+            <div className="flex flex-col items-center">
+              <span className={`text-base font-black ${p.stock<5?'text-red-600':p.stock<10?'text-amber-600':'text-slate-800'}`}>{p.stock}</span>
+              <span className="text-[9px] text-slate-400 font-bold uppercase">In Hand</span>
+            </div>
+          )},
+        ]}
+        data={filtered}
+      />
 
       <Modal open={showForm} onClose={()=>setShowForm(false)} title="Add New Product" subtitle="Enter complete product details for the master catalogue" size="lg" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

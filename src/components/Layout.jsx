@@ -50,8 +50,8 @@ const Layout = ({ currentPage, setCurrentPage, children, user, onLogout }) => {
           </div>
           {sidebarOpen && (
             <div className="overflow-hidden">
-              <p className="text-slate-800 font-extrabold text-sm leading-tight">Masion</p>
-              <p className="text-indigo-600 text-xs font-semibold">Technovation</p>
+              <p className="text-slate-800 font-extrabold text-sm leading-tight">Trading Business</p>
+              <p className="text-indigo-600 text-xs font-semibold">Management System</p>
             </div>
           )}
         </div>

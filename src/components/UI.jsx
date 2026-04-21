@@ -168,3 +168,95 @@ export const statusColor = (status) => {
   if (['confirmed', 'hot', 'processing', 'late'].includes(s)) return 'indigo';
   return 'slate';
 };
+
+export const DataTable = ({ columns, data, emptyMsg = 'No records found' }) => {
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-100 bg-slate-50">
+              {columns.map((col, i) => (
+                <th key={i} className={`text-left text-slate-500 text-[10px] font-bold uppercase tracking-wider px-4 py-3 whitespace-nowrap ${col.className || ''}`}>
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-4 py-12 text-center text-slate-400">
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="font-medium">{emptyMsg}</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              data.map((item, i) => (
+                <tr key={item.id || i} className="border-b border-slate-50 hover:bg-slate-50/80 transition-colors group">
+                  {columns.map((col, j) => (
+                    <td key={j} className={`px-4 py-3.5 text-slate-700 whitespace-nowrap ${col.className || ''}`}>
+                      {col.render ? col.render(item) : item[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden divide-y divide-slate-100 bg-slate-50/30">
+        {data.length === 0 ? (
+          <div className="px-4 py-12 text-center text-slate-400 font-medium">{emptyMsg}</div>
+        ) : (
+          data.map((item, i) => {
+            const safeItem = item || {};
+            const col0 = columns[0] || {};
+            const col1 = columns[1] || col0;
+            const lastCol = columns[columns.length - 1] || col1;
+            
+            return (
+              <div key={safeItem.id || i} className="p-4 bg-white hover:bg-slate-50 transition-colors">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="space-y-1 max-w-[70%]">
+                    {/* First column as a ID/Badge */}
+                    <div className="flex items-center gap-2">
+                      <div className="text-[10px] font-bold font-mono text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded inline-block">
+                        {col0.render ? col0.render(safeItem) : safeItem[col0.key]}
+                      </div>
+                    </div>
+                    {/* Second column as primary title */}
+                    <div className="text-sm font-bold text-slate-900 leading-snug">
+                      {col1.render ? col1.render(safeItem) : safeItem[col1.key]}
+                    </div>
+                  </div>
+                  {/* Last column (usually Status or Actions) */}
+                  <div className="flex flex-col items-end gap-2 text-right">
+                    {lastCol.render ? lastCol.render(safeItem) : safeItem[lastCol.key]}
+                  </div>
+                </div>
+
+                {/* Grid for other details */}
+                <div className="grid grid-cols-2 gap-y-4 gap-x-6">
+                  {columns.length > 3 && columns.slice(2, -1).map((col, j) => (
+                    <div key={j} className="space-y-1 overflow-hidden">
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{col.label}</p>
+                      <div className="text-xs text-slate-700 font-semibold truncate leading-none">
+                        {col.render ? col.render(safeItem) : safeItem[col.key]}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+};
+

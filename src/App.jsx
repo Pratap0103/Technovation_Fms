@@ -41,7 +41,7 @@ function App() {
 
   // Check local storage for persistent login
   useEffect(() => {
-    const savedUser = localStorage.getItem('masion_user');
+    const savedUser = localStorage.getItem('tbms_user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -49,12 +49,12 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    localStorage.setItem('masion_user', JSON.stringify(userData));
+    localStorage.setItem('tbms_user', JSON.stringify(userData));
   };
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('masion_user');
+    localStorage.removeItem('tbms_user');
     setCurrentPage('dashboard'); // Reset page view on logout
   };
 

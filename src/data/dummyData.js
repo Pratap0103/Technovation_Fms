@@ -1,14 +1,14 @@
 // =============================================
-// MASION TECHNOVATION – Complete Dummy Data
+// TRADING BUSINESS MANAGEMENT SYSTEM – Complete Dummy Data
 // =============================================
 
 export const COMPANY = {
-  name: 'Masion Technovation',
-  tagline: 'Smart Solutions, Delivered',
+  name: 'Trading Business Management System',
+  tagline: 'Reliable Trading, Seamless Management',
   gstin: '27AABCM1234D1Z5',
   address: 'Plot No. 14, Sector 5, MIDC, Pune – 411018',
   phone: '+91 98765 43210',
-  email: 'info@maisontechnovation.com',
+  email: 'info@tbms.com',
 };
 
 // ── CUSTOMERS ──────────────────────────────
@@ -112,13 +112,13 @@ export const installations = [
 
 // ── EMPLOYEES / ATTENDANCE ─────────────────
 export const employees = [
-  { id: 'EMP001', name: 'Rohan Joshi', role: 'Sales Executive', department: 'Sales', mobile: '9901234567', email: 'rohan@maisont.com', joinDate: '2024-01-15' },
-  { id: 'EMP002', name: 'Priya Sharma', role: 'Sales Executive', department: 'Sales', mobile: '9901234568', email: 'priya@maisont.com', joinDate: '2024-03-01' },
-  { id: 'EMP003', name: 'Amit Verma', role: 'Senior Sales Executive', department: 'Sales', mobile: '9901234569', email: 'amit@maisont.com', joinDate: '2023-06-15' },
-  { id: 'EMP004', name: 'Sunil Yadav', role: 'Installation Engineer', department: 'Technical', mobile: '9901234570', email: 'sunil@maisont.com', joinDate: '2023-08-01' },
-  { id: 'EMP005', name: 'Manoj Tiwari', role: 'Service Engineer', department: 'Technical', mobile: '9901234571', email: 'manoj@maisont.com', joinDate: '2024-02-10' },
-  { id: 'EMP006', name: 'Ravi Kumar', role: 'Service Engineer', department: 'Technical', mobile: '9901234572', email: 'ravi@maisont.com', joinDate: '2024-04-01' },
-  { id: 'EMP007', name: 'Raju Driver', role: 'Driver', department: 'Logistics', mobile: '9901234573', email: 'raju@maisont.com', joinDate: '2025-01-01' },
+  { id: 'EMP001', name: 'Rohan Joshi', role: 'Sales Executive', department: 'Sales', mobile: '9901234567', email: 'rohan@tbms.com', joinDate: '2024-01-15' },
+  { id: 'EMP002', name: 'Priya Sharma', role: 'Sales Executive', department: 'Sales', mobile: '9901234568', email: 'priya@tbms.com', joinDate: '2024-03-01' },
+  { id: 'EMP003', name: 'Amit Verma', role: 'Senior Sales Executive', department: 'Sales', mobile: '9901234569', email: 'amit@tbms.com', joinDate: '2023-06-15' },
+  { id: 'EMP004', name: 'Sunil Yadav', role: 'Installation Engineer', department: 'Technical', mobile: '9901234570', email: 'sunil@tbms.com', joinDate: '2023-08-01' },
+  { id: 'EMP005', name: 'Manoj Tiwari', role: 'Service Engineer', department: 'Technical', mobile: '9901234571', email: 'manoj@tbms.com', joinDate: '2024-02-10' },
+  { id: 'EMP006', name: 'Ravi Kumar', role: 'Service Engineer', department: 'Technical', mobile: '9901234572', email: 'ravi@tbms.com', joinDate: '2024-04-01' },
+  { id: 'EMP007', name: 'Raju Driver', role: 'Driver', department: 'Logistics', mobile: '9901234573', email: 'raju@tbms.com', joinDate: '2025-01-01' },
 ];
 
 export const attendance = [

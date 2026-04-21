@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatDate, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatDate, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { complaints as initialComplaints, customers, employees, products } from '../data/dummyData';
 
@@ -98,39 +98,36 @@ const Service = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {filtered.map(c => (
-          <div key={c.id} className={`bg-white border ${c.priority === 'High' && c.status !== 'Resolved' ? 'border-red-200 shadow-sm shadow-red-100' : 'border-slate-200 shadow-sm'} rounded-xl p-5 space-y-4 relative overflow-hidden`}>
-            {c.priority === 'High' && c.status !== 'Resolved' && <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase">High Priority</div>}
-            
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-indigo-600 font-mono text-xs font-bold">{c.id}</span>
-                <p className="text-slate-800 font-black text-base mt-1">{c.customerName}</p>
-                <p className="text-slate-500 text-sm mt-0.5">{c.productName}</p>
+      <DataTable
+        columns={[
+          { label: 'SR #', render: c => <span className="font-mono text-indigo-700 font-bold">{c.id}</span> },
+          { label: 'Customer', render: c => (
+            <div>
+              <p className="text-slate-800 font-bold">{c.customerName}</p>
+              <p className="text-slate-500 text-[10px] font-medium uppercase tracking-wider">{c.productName}</p>
+            </div>
+          )},
+          { label: 'Issue Description', render: c => (
+            <div className="max-w-[200px]">
+              <p className="text-slate-700 text-xs font-semibold truncate">{c.complaintDesc}</p>
+              <div className="flex gap-2 mt-1">
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${c.priority==='High'?'bg-red-50 text-red-600 border border-red-100':'bg-slate-50 text-slate-500'}`}>
+                  {c.priority}
+                </span>
+                <span className="text-[9px] text-slate-400 font-bold uppercase">{c.type}</span>
               </div>
-              <div className="mt-6 md:mt-0">
-                  <Badge label={c.status} color={statusColor(c.status)}/>
-              </div>
             </div>
-            
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-               <p className="text-xs text-slate-400 font-medium mb-1">Issue Description</p>
-               <p className="text-sm text-slate-700 font-medium leading-snug">{c.complaintDesc}</p>
+          )},
+          { label: 'Assigned Engineer', render: c => (
+            <div className="text-xs">
+              <p className="text-indigo-600 font-bold">{c.engineer}</p>
+              <p className="text-slate-400 text-[10px] font-medium">{formatDate(c.date)}</p>
             </div>
-
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div><p className="text-slate-400 font-medium">Type</p><p className="text-slate-700 mt-0.5 font-semibold">{c.type}</p></div>
-              <div><p className="text-slate-400 font-medium">Reported Date</p><p className="text-slate-700 mt-0.5 font-semibold">{formatDate(c.date)}</p></div>
-              <div><p className="text-slate-400 font-medium">Engineer Assigned</p><p className="text-slate-700 mt-0.5 font-semibold">{c.engineer}</p></div>
-              
-              {c.status === 'Resolved' && (
-                <div><p className="text-slate-400 font-medium">Turnaround Time</p><p className="text-emerald-600 mt-0.5 font-semibold text-sm">{c.tatDay} days</p></div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+          )},
+          { label: 'Status', render: c => <Badge label={c.status} color={statusColor(c.status)}/> },
+        ]}
+        data={filtered}
+      />
 
       <Modal open={showForm} onClose={() => setShowForm(false)} title="Log New Complaint" subtitle="Create a service ticket and assign an engineer" size="md" onSubmit={handleSubmit}>
         <div className="space-y-4">

@@ -37,8 +37,8 @@ const Login = ({ onLogin }) => {
             <Building2 size={24} className="text-indigo-600" />
           </div>
           <div>
-            <h1 className="text-xl font-black leading-tight tracking-tight">Masion</h1>
-            <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest">Technovation</p>
+            <h1 className="text-xl font-black leading-tight tracking-tight">Trading</h1>
+            <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest">Business Management</p>
           </div>
         </div>
 
@@ -61,7 +61,7 @@ const Login = ({ onLogin }) => {
         </div>
         
         <div className="relative z-10 text-sm text-indigo-200/60 font-medium">
-          © 2026 Masion Technovation. All rights reserved.
+          © 2026 Trading Business Management System. All rights reserved.
         </div>
       </div>
 
@@ -74,8 +74,8 @@ const Login = ({ onLogin }) => {
             <Building2 size={20} className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-black text-slate-900 leading-tight">Masion</h1>
-            <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest">Technovation</p>
+            <h1 className="text-xl font-black text-slate-900 leading-tight">Trading</h1>
+            <p className="text-indigo-600 text-xs font-bold uppercase tracking-widest">Business Management</p>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { warrantyClaims as initialClaims, vendors, customers, products } from '../data/dummyData';
 
@@ -83,31 +83,31 @@ const Warranty = () => {
         </select>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-             <thead><tr className="border-b border-slate-100 bg-slate-50">
-              {['Claim #', 'SR No', 'Date', 'Vendor', 'Product', 'Claim Amount', 'Recovery Amount', 'Status'].map((h, i) => (
-                <th key={i} className="text-left text-slate-500 text-xs font-semibold uppercase tracking-wider px-4 py-3 whitespace-nowrap">{h}</th>
-              ))}
-            </tr></thead>
-            <tbody>
-              {filtered.map(c => (
-                <tr key={c.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 text-indigo-700 font-bold text-xs whitespace-nowrap">{c.id}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap truncate max-w-[100px]">{c.srNo}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{formatDate(c.date)}</td>
-                  <td className="px-4 py-3 text-slate-800 font-semibold whitespace-nowrap truncate max-w-[150px]">{c.vendorName}</td>
-                  <td className="px-4 py-3 text-slate-600 max-w-[150px] whitespace-nowrap truncate">{c.productName}</td>
-                  <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{formatCurrency(c.claimAmount)}</td>
-                  <td className="px-4 py-3 text-emerald-700 font-black whitespace-nowrap">{formatCurrency(c.recoveryAmount)}</td>
-                  <td className="px-4 py-3 whitespace-nowrap"><Badge label={c.status} color={statusColor(c.status)}/></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={[
+          { label: 'Claim #', render: c => <span className="font-mono text-indigo-700 font-bold">{c.id}</span> },
+          { label: 'Vendor / Product', render: c => (
+            <div>
+              <p className="text-slate-800 font-bold">{c.vendorName}</p>
+              <p className="text-slate-400 text-[10px] uppercase font-bold">{c.productName}</p>
+            </div>
+          )},
+          { label: 'Reference', render: c => (
+            <div className="text-xs">
+              <p className="text-slate-600 font-medium">SR: {c.srNo}</p>
+              <p className="text-slate-400">{formatDate(c.date)}</p>
+            </div>
+          )},
+          { label: 'Monetary', render: c => (
+            <div className="text-xs">
+              <p className="text-red-700 font-bold">Claim: {formatCurrency(c.claimAmount)}</p>
+              <p className="text-emerald-700 font-black">Recov: {formatCurrency(c.recoveryAmount)}</p>
+            </div>
+          )},
+          { label: 'Status', render: c => <Badge label={c.status} color={statusColor(c.status)}/> },
+        ]}
+        data={filtered}
+      />
       
       <Modal open={showForm} onClose={() => setShowForm(false)} title="Lodge Warranty Claim" subtitle="Send defective products back to the vendor" size="md" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

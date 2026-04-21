@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Phone, Mail, Building2 } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { vendors as initialVendors } from '../data/dummyData';
 
@@ -75,28 +75,33 @@ const Vendors = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map(v=>(
-          <div key={v.id} onClick={()=>setSelected(v)} className="bg-white border border-slate-200 rounded-xl p-5 cursor-pointer hover:border-indigo-300 hover:shadow-md transition-all duration-200 space-y-3 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div><p className="text-slate-800 font-black">{v.company}</p><p className="text-slate-500 text-sm">{v.name}</p></div>
-              <Badge label={v.type} color="purple"/>
+      <DataTable
+        columns={[
+          { label: 'ID', render: v => <span className="font-mono text-indigo-700 font-bold">{v.id}</span> },
+          { label: 'Company Name', render: v => (
+            <div className="cursor-pointer" onClick={() => setSelected(v)}>
+              <p className="text-slate-800 font-bold">{v.company}</p>
+              <p className="text-slate-500 text-xs">{v.name}</p>
             </div>
-            <div className="space-y-1.5">
-              <p className="text-xs text-slate-500 flex items-center gap-2"><Phone size={11} className="text-indigo-400"/>{v.mobile}</p>
-              <p className="text-xs text-slate-500 flex items-center gap-2"><Mail size={11} className="text-indigo-400"/>{v.email}</p>
-              <p className="text-xs text-slate-500 flex items-center gap-2"><Building2 size={11} className="text-indigo-400"/>{v.city}, {v.state}</p>
+          )},
+          { label: 'Type', render: v => <Badge label={v.type} color="purple"/> },
+          { label: 'Contact', render: v => (
+            <div className="space-y-0.5 text-xs">
+              <p className="flex items-center gap-1.5 text-slate-600"><Phone size={10} className="text-indigo-400"/> {v.mobile}</p>
+              <p className="flex items-center gap-1.5 text-slate-400 truncate max-w-[150px]"><Mail size={10} className="text-indigo-300"/> {v.email}</p>
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-              <div>
-                <p className="text-red-700 font-black text-sm">{formatCurrency(v.outstanding)}</p>
-                <p className="text-slate-400 text-xs">Outstanding</p>
-              </div>
-              <Badge label={v.status} color={statusColor(v.status)}/>
+          )},
+          { label: 'Location', render: v => (
+            <div className="flex items-center gap-1.5 text-slate-600">
+              <Building2 size={11} className="text-slate-400"/>
+              <span>{v.city}, {v.state}</span>
             </div>
-          </div>
-        ))}
-      </div>
+          )},
+          { label: 'Outstanding', render: v => <span className="text-red-700 font-black">{formatCurrency(v.outstanding)}</span> },
+          { label: 'Status', render: v => <Badge label={v.status} color={statusColor(v.status)}/> },
+        ]}
+        data={filtered}
+      />
 
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{backdropFilter:'blur(4px)',backgroundColor:'rgba(15,23,42,0.4)'}} onClick={()=>setSelected(null)}>

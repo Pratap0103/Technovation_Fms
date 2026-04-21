@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { PageHeader, SearchBar, formatCurrency } from '../components/UI';
+import { PageHeader, SearchBar, formatCurrency, DataTable, Badge } from '../components/UI';
 import { products } from '../data/dummyData';
 
 const Inventory = () => {
@@ -51,41 +51,43 @@ const Inventory = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filtered.map(p => {
-          const stockPct = Math.min(100, (p.stock / 20) * 100);
-          const stockColor = p.stock < 5 ? 'text-red-700 bg-red-50 border-red-100' : p.stock < 10 ? 'text-amber-700 bg-amber-50 border-amber-100' : 'text-emerald-700 bg-emerald-50 border-emerald-100';
-          return (
-            <div key={p.id} className="bg-white border border-slate-200 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all duration-200 space-y-4 shadow-sm">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 mr-2">
-                  <p className="text-slate-800 font-bold text-sm truncate">{p.name}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{p.code} • {p.brand}</p>
-                </div>
-                <span className={`text-xs px-2.5 py-1 rounded-full border font-black ${stockColor}`}>{p.stock}</span>
-              </div>
-              
-              <div className="space-y-2 py-2 border-y border-slate-50">
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400 font-medium">Category</span><span className="text-slate-700 font-semibold">{p.category}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400 font-medium">Value</span><span className="text-indigo-700 font-black">{formatCurrency(p.stock * p.purchaseRate)}</span>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-bold">
-                  <span>Stock Level</span><span>{p.stock} {p.unit}</span>
+      <DataTable
+        columns={[
+          { label: 'SKU', render: p => <span className="font-mono text-indigo-700 font-bold">{p.code}</span> },
+          { label: 'Product Name', render: p => (
+            <div>
+              <p className="text-slate-800 font-bold">{p.name}</p>
+              <p className="text-slate-400 text-[10px] uppercase font-bold">{p.brand} • {p.model}</p>
+            </div>
+          )},
+          { label: 'Category', render: p => <span className="text-slate-600 font-medium">{p.category}</span> },
+          { label: 'Valuation', render: p => (
+            <div className="flex flex-col items-start text-xs">
+              <span className="text-indigo-700 font-black">{formatCurrency(p.stock * p.purchaseRate)}</span>
+              <span className="text-[10px] text-slate-400">Total Asset Value</span>
+            </div>
+          )},
+          { label: 'Stock Level', render: p => {
+            const stockPct = Math.min(100, (p.stock / 20) * 100);
+            return (
+              <div className="w-40">
+                <div className="flex justify-between text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-bold">
+                  <span>{p.stock} / 20</span><span>{Math.round(stockPct)}%</span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
                   <div className={`h-1.5 rounded-full transition-all duration-500 ${p.stock < 5 ? 'bg-red-500' : p.stock < 10 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${stockPct}%` }} />
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          }},
+          { label: 'Status', render: p => {
+            const status = p.stock < 5 ? 'Low Stock' : p.stock < 10 ? 'Moderate' : 'Healthy';
+            const color = p.stock < 5 ? 'red' : p.stock < 10 ? 'amber' : 'green';
+            return <Badge label={status} color={color}/>;
+          }},
+        ]}
+        data={filtered}
+      />
     </div>
   );
 };

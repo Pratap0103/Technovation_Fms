@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { expenses as initialExpenses, expenseByCategory, employees } from '../data/dummyData';
 
@@ -89,31 +89,27 @@ const Expenses = () => {
             </select>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                 <thead><tr className="border-b border-slate-100 bg-slate-50">
-                  {['Expense ID', 'Date', 'Category', 'Description', 'Submitted By', 'Method', 'Amount', 'Status'].map((h, i) => (
-                    <th key={i} className="text-left text-slate-500 text-xs font-semibold uppercase tracking-wider px-4 py-3 whitespace-nowrap">{h}</th>
-                  ))}
-                </tr></thead>
-                <tbody>
-                  {filtered.map(e => (
-                    <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                      <td className="px-4 py-3 text-indigo-700 font-bold text-xs whitespace-nowrap">{e.id}</td>
-                      <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{formatDate(e.date)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap"><Badge label={e.category} color="purple"/></td>
-                      <td className="px-4 py-3 text-slate-800 font-medium whitespace-nowrap truncate max-w-[150px]">{e.desc}</td>
-                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap truncate max-w-[120px]">{e.submittedBy}</td>
-                      <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{e.paymentMethod}</td>
-                      <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{formatCurrency(e.amount)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap"><Badge label={e.status} color={statusColor(e.status)}/></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <DataTable
+            columns={[
+              { label: 'Expense ID', render: e => <span className="font-mono text-indigo-700 font-bold">{e.id}</span> },
+              { label: 'Description', render: e => (
+                <div>
+                  <p className="text-slate-800 font-semibold">{e.desc}</p>
+                  <p className="text-slate-400 text-[10px] font-medium uppercase tracking-wider">{formatDate(e.date)}</p>
+                </div>
+              )},
+              { label: 'Category', render: e => <Badge label={e.category} color="purple"/> },
+              { label: 'Submitted By', render: e => (
+                <div className="flex flex-col">
+                  <span className="text-slate-700 font-medium">{e.submittedBy}</span>
+                  <span className="text-[10px] text-slate-400">{e.paymentMethod}</span>
+                </div>
+              )},
+              { label: 'Amount', render: e => <span className="text-red-700 font-black">{formatCurrency(e.amount)}</span> },
+              { label: 'Status', render: e => <Badge label={e.status} color={statusColor(e.status)}/> },
+            ]}
+            data={filtered}
+          />
         </div>
 
         <div>

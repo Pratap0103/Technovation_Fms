@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { TrendingUp, TrendingDown, DollarSign, CreditCard } from 'lucide-react';
-import { PageHeader, formatCurrency } from '../components/UI';
+import { PageHeader, formatCurrency, DataTable } from '../components/UI';
 import { financialSummary, monthlyTrend } from '../data/dummyData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -130,42 +130,16 @@ const Accounts = () => {
       </div>
 
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
-          <h3 className="text-slate-800 font-bold">Customer Ledger Summary</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-200 bg-white">
-                {['Customer', 'Opening Balance', 'Sales (Dr)', 'Received (Cr)', 'Closing Balance'].map((h, i) => (
-                  <th key={i} className="text-left text-slate-500 text-xs font-semibold uppercase tracking-wider px-4 py-3 whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {customerLedger.map((row, i) => (
-                <tr key={i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 text-slate-800 font-bold whitespace-nowrap truncate max-w-[180px]">{row.name}</td>
-                  <td className="px-4 py-3 text-slate-500 font-medium whitespace-nowrap">{formatCurrency(row.opening)}</td>
-                  <td className="px-4 py-3 text-emerald-600 font-bold whitespace-nowrap">{formatCurrency(row.sales)}</td>
-                  <td className="px-4 py-3 text-sky-600 font-bold whitespace-nowrap">{formatCurrency(row.received)}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span className={`font-black ${row.closing > 0 ? 'text-amber-600' : 'text-slate-500'}`}>{formatCurrency(row.closing)}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-slate-50 border-t border-slate-200">
-                <td className="px-4 py-3 text-slate-800 font-bold">Total</td>
-                <td className="px-4 py-3 text-slate-800 font-bold">{formatCurrency(0)}</td>
-                <td className="px-4 py-3 text-emerald-700 font-black">{formatCurrency(customerLedger.reduce((s, r) => s + r.sales, 0))}</td>
-                <td className="px-4 py-3 text-sky-700 font-black">{formatCurrency(customerLedger.reduce((s, r) => s + r.received, 0))}</td>
-                <td className="px-4 py-3 text-amber-700 font-black">{formatCurrency(customerLedger.reduce((s, r) => s + r.closing, 0))}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+      <DataTable
+        columns={[
+          { label: 'Customer', render: row => <span className="text-slate-800 font-bold">{row.name}</span> },
+          { label: 'Opening', render: row => <span className="text-slate-500 font-medium">{formatCurrency(row.opening)}</span> },
+          { label: 'Sales (Dr)', render: row => <span className="text-emerald-600 font-bold">{formatCurrency(row.sales)}</span> },
+          { label: 'Received (Cr)', render: row => <span className="text-sky-600 font-bold">{formatCurrency(row.received)}</span> },
+          { label: 'Closing Bal', render: row => <span className={`font-black ${row.closing > 0 ? 'text-amber-600' : 'text-slate-500'}`}>{formatCurrency(row.closing)}</span> },
+        ]}
+        data={customerLedger}
+      />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Phone, MapPin, TrendingUp, Calendar } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { leads as initialLeads, employees } from '../data/dummyData';
 
@@ -108,77 +108,45 @@ const CRM = () => {
         </div>
       </div>
 
-      {/* Cards View */}
-      {view === 'cards' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map(lead => (
-            <div key={lead.id} onClick={() => setSelected(lead)}
-              className="bg-white border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-indigo-300 hover:shadow-md transition-all duration-200 space-y-3 shadow-sm">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-slate-800 font-bold text-sm">{lead.name}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{lead.company}</p>
-                </div>
-                <Badge label={lead.status} color={statusColorMap[lead.status]} />
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs text-slate-500 flex items-center gap-1.5"><Phone size={10} className="text-slate-400" />{lead.mobile}</p>
-                <p className="text-xs text-slate-500 flex items-center gap-1.5"><MapPin size={10} className="text-slate-400" />{lead.city}</p>
-                <p className="text-xs text-slate-500 flex items-center gap-1.5"><TrendingUp size={10} className="text-slate-400" />{lead.product}</p>
-              </div>
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                <div>
-                  <p className="text-emerald-700 font-bold text-sm">{formatCurrency(lead.value)}</p>
-                  <p className="text-slate-400 text-xs">{lead.salesperson}</p>
-                </div>
-                <div className="text-right">
-                  <Badge label={lead.stage} color="indigo" />
-                  <p className="text-slate-400 text-xs mt-1 flex items-center gap-1 justify-end"><Calendar size={9} />{lead.nextFollowup}</p>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs text-slate-400 mb-1"><span>Conversion</span><span className="font-semibold text-slate-600">{lead.conversionProb}%</span></div>
-                <div className="w-full bg-slate-100 rounded-full h-1.5">
-                  <div className="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-emerald-500" style={{ width: `${lead.conversionProb}%` }} />
-                </div>
-              </div>
+      <DataTable
+        columns={[
+          { label: 'Lead ID', render: l => <span className="font-mono text-indigo-700 font-bold">{l.id}</span> },
+          { label: 'Contact', render: l => (
+            <div className="cursor-pointer" onClick={() => setSelected(l)}>
+              <p className="text-slate-800 font-bold">{l.name}</p>
+              <p className="text-slate-400 text-xs font-medium">{l.company}</p>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead><tr className="border-b border-slate-100 bg-slate-50">
-                {['#','Contact','Company','Product','Value','Stage','Status','Salesperson','Next Follow-up','Prob'].map((h,i)=>(
-                  <th key={i} className="text-left text-slate-500 text-xs font-semibold uppercase tracking-wider px-4 py-3 whitespace-nowrap">{h}</th>
-                ))}
-              </tr></thead>
-              <tbody>
-                {filtered.map(l=>(
-                  <tr key={l.id} onClick={()=>setSelected(l)} className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors">
-                    <td className="px-4 py-3 text-slate-400 text-xs font-mono">{l.id}</td>
-                    <td className="px-4 py-3 whitespace-nowrap truncate max-w-[150px]"><p className="text-slate-800 font-semibold truncate">{l.name}</p><p className="text-slate-400 text-xs truncate">{l.mobile}</p></td>
-                    <td className="px-4 py-3 text-slate-700 whitespace-nowrap truncate max-w-[150px]">{l.company}</td>
-                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap truncate max-w-[140px]">{l.product}</td>
-                    <td className="px-4 py-3 text-emerald-700 font-bold whitespace-nowrap">{formatCurrency(l.value)}</td>
-                    <td className="px-4 py-3 whitespace-nowrap"><Badge label={l.stage} color="indigo"/></td>
-                    <td className="px-4 py-3 whitespace-nowrap"><Badge label={l.status} color={statusColorMap[l.status]}/></td>
-                    <td className="px-4 py-3 text-slate-700 whitespace-nowrap truncate max-w-[120px]">{l.salesperson}</td>
-                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{l.nextFollowup}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-14 bg-slate-100 rounded-full h-1.5"><div className="h-1.5 rounded-full bg-indigo-500" style={{width:`${l.conversionProb}%`}}/></div>
-                        <span className="text-slate-600 text-xs font-semibold">{l.conversionProb}%</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+          )},
+          { label: 'Interest', render: l => (
+            <div className="text-xs">
+              <p className="text-slate-700 font-semibold truncate max-w-[150px]">{l.product}</p>
+              <p className="text-slate-400 font-medium">Source: {l.source}</p>
+            </div>
+          )},
+          { label: 'Pipeline', render: l => (
+            <div className="text-xs">
+              <p className="text-emerald-700 font-black">{formatCurrency(l.value)}</p>
+              <Badge label={l.stage} color="indigo"/>
+            </div>
+          )},
+          { label: 'Assigned', render: l => (
+            <div className="text-xs">
+              <p className="text-slate-700 font-medium">{l.salesperson}</p>
+              <p className="text-indigo-600 font-bold">Follow-up: {l.nextFollowup}</p>
+            </div>
+          )},
+          { label: 'Prob', render: l => (
+            <div className="flex items-center gap-2">
+              <div className="w-12 bg-slate-100 rounded-full h-1.5 overflow-hidden shadow-inner">
+                <div className="h-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-emerald-500" style={{ width: `${l.conversionProb}%` }} />
+              </div>
+              <span className="text-[10px] text-slate-800 font-black">{l.conversionProb}%</span>
+            </div>
+          )},
+          { label: 'Status', render: l => <Badge label={l.status} color={statusColorMap[l.status]}/> },
+        ]}
+        data={filtered}
+      />
 
       {/* Detail Modal */}
       {selected && (

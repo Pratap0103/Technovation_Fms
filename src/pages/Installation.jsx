@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { PageHeader, Badge, Btn, formatDate, statusColor } from '../components/UI';
+import { PageHeader, Badge, Btn, formatDate, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { installations as initialInstall, customers, employees, salesOrders } from '../data/dummyData';
 
@@ -65,34 +65,32 @@ const Installation = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {filtered.map(inst=>(
-          <div key={inst.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-indigo-600 font-mono text-xs font-bold">{inst.id}</span>
-                <p className="text-slate-800 font-black text-base mt-1">{inst.customer}</p>
-                <p className="text-slate-500 text-sm">{inst.product}</p>
-              </div>
-              <Badge label={inst.status} color={statusColor(inst.status)}/>
+      <DataTable
+        columns={[
+          { label: 'ID', render: i => <span className="font-mono text-indigo-700 font-bold">{i.id}</span> },
+          { label: 'Customer', render: i => (
+            <div>
+              <p className="text-slate-800 font-bold">{i.customer}</p>
+              <p className="text-slate-500 text-xs">{i.product}</p>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div><p className="text-slate-400 font-medium">Site</p><p className="text-slate-700 mt-0.5 font-semibold">{inst.site}</p></div>
-              <div><p className="text-slate-400 font-medium">Engineer</p><p className="text-slate-700 mt-0.5 font-semibold">{inst.engineer}</p></div>
-              <div><p className="text-slate-400 font-medium">Scheduled</p><p className="text-amber-600 mt-0.5 font-semibold">{formatDate(inst.scheduledDate)}</p></div>
-              <div><p className="text-slate-400 font-medium">Completed</p><p className="text-emerald-600 mt-0.5 font-semibold">{formatDate(inst.completedDate)}</p></div>
-              {inst.warrantyStart && (<>
-                <div><p className="text-slate-400 font-medium">Warranty Start</p><p className="text-slate-700 mt-0.5">{formatDate(inst.warrantyStart)}</p></div>
-                <div><p className="text-slate-400 font-medium">Warranty End</p><p className="text-slate-700 mt-0.5">{formatDate(inst.warrantyEnd)}</p></div>
-              </>)}
+          )},
+          { label: 'Site / Engineer', render: i => (
+            <div className="text-xs">
+              <p className="text-slate-700 font-medium truncate max-w-[150px]">{i.site}</p>
+              <p className="text-indigo-600 font-semibold">{i.engineer}</p>
             </div>
-            <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-100">
-              <span className="text-slate-400">SO: <span className="text-indigo-600 font-semibold">{inst.salesOrder}</span></span>
-              {inst.status==='Completed' && <span className="text-emerald-600 font-semibold">✓ Warranty Active</span>}
+          )},
+          { label: 'Timeline', render: i => (
+            <div className="text-xs">
+              <p className="text-amber-600 font-bold">Sch: {formatDate(i.scheduledDate)}</p>
+              <p className="text-emerald-600 font-bold">Comp: {formatDate(i.completedDate) || '—'}</p>
             </div>
-          </div>
-        ))}
-      </div>
+          )},
+          { label: 'Sales Order', render: i => <span className="text-xs text-slate-500 font-mono">{i.salesOrder}</span> },
+          { label: 'Status', render: i => <Badge label={i.status} color={statusColor(i.status)}/> },
+        ]}
+        data={filtered}
+      />
 
       <Modal open={showForm} onClose={()=>setShowForm(false)} title="Schedule Installation" subtitle="Link to a sales order and assign an engineer" size="md" onSubmit={handleSubmit}>
         <div className="space-y-4">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Phone, Mail, MapPin } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { customers as initialCustomers } from '../data/dummyData';
 
@@ -77,26 +77,34 @@ const Customers = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map(c=>(
-          <div key={c.id} onClick={()=>setSelected(c)} className="bg-white border border-slate-200 rounded-xl p-5 cursor-pointer hover:border-indigo-300 hover:shadow-md transition-all duration-200 space-y-3 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div><p className="text-slate-800 font-black">{c.company}</p><p className="text-slate-500 text-sm">{c.name}</p></div>
-              <Badge label={c.status} color={statusColor(c.status)}/>
+      <DataTable
+        columns={[
+          { label: 'ID', render: c => <span className="font-mono text-indigo-700 font-bold">{c.id}</span> },
+          { label: 'Company Name', render: c => (
+            <div className="cursor-pointer" onClick={() => setSelected(c)}>
+              <p className="text-slate-800 font-bold">{c.company}</p>
+              <p className="text-slate-500 text-xs">{c.name}</p>
             </div>
-            <div className="space-y-1.5">
-              <p className="text-xs text-slate-500 flex items-center gap-2"><Phone size={11} className="text-indigo-400"/>{c.mobile}</p>
-              <p className="text-xs text-slate-500 flex items-center gap-2"><Mail size={11} className="text-indigo-400"/>{c.email}</p>
-              <p className="text-xs text-slate-500 flex items-center gap-2"><MapPin size={11} className="text-indigo-400"/>{c.city}, {c.state}</p>
+          )},
+          { label: 'Contact', render: c => (
+            <div className="space-y-0.5 text-xs">
+              <p className="flex items-center gap-1.5 text-slate-600"><Phone size={10} className="text-indigo-400"/> {c.mobile}</p>
+              <p className="flex items-center gap-1.5 text-slate-400 truncate max-w-[150px]"><Mail size={10} className="text-indigo-300"/> {c.email}</p>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center">
-              <div><p className="text-red-700 font-black text-sm">{formatCurrency(c.outstanding)}</p><p className="text-slate-400 text-xs">Outstanding</p></div>
-              <div><p className="text-purple-700 font-black text-sm">{formatCurrency(c.creditLimit)}</p><p className="text-slate-400 text-xs">Credit Limit</p></div>
-              <div><p className="text-slate-700 font-bold text-xs">{c.paymentTerms}</p><p className="text-slate-400 text-xs">Terms</p></div>
+          )},
+          { label: 'Location', render: c => (
+            <div className="flex items-center gap-1.5 text-slate-600">
+              <MapPin size={11} className="text-slate-400"/>
+              <span>{c.city}, {c.state}</span>
             </div>
-          </div>
-        ))}
-      </div>
+          )},
+          { label: 'Outstanding', render: c => <span className="text-red-700 font-black">{formatCurrency(c.outstanding)}</span> },
+          { label: 'Credit Limit', render: c => <span className="text-purple-700 font-bold">{formatCurrency(c.creditLimit)}</span> },
+          { label: 'Terms', key: 'paymentTerms' },
+          { label: 'Status', render: c => <Badge label={c.status} color={statusColor(c.status)}/> },
+        ]}
+        data={filtered}
+      />
 
       {/* Detail Modal */}
       {selected && (

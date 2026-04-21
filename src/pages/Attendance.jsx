@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Clock, Car } from 'lucide-react';
-import { PageHeader, Badge, statusColor } from '../components/UI';
+import { PageHeader, Badge, statusColor, DataTable } from '../components/UI';
 import { attendance, employees } from '../data/dummyData';
 
 const Attendance = () => {
@@ -40,62 +40,45 @@ const Attendance = () => {
         <span className="ml-auto text-indigo-700 font-semibold text-sm bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">{present}/{todayData.length} Present</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {todayData.map(a => (
-          <div key={a.id} className={`bg-white border ${a.status === 'Absent' ? 'border-red-100 bg-red-50/30' : 'border-slate-200'} rounded-xl p-4 shadow-sm`}>
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shadow-inner ${statusBg[a.status]}`}>
-                  <span className={statusIconColor[a.status]}>{statusIcon[a.status]}</span>
-                </div>
-                <div>
-                  <p className="text-slate-800 font-bold">{a.name}</p>
-                  <p className="text-slate-500 text-xs font-medium mt-0.5">{employees.find(e => e.id === a.empId)?.role}</p>
-                </div>
+      <DataTable
+        columns={[
+          { label: 'Employee', render: a => (
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-inner ${statusBg[a.status]}`}>
+                <span className={statusIconColor[a.status]}>{statusIcon[a.status]}</span>
               </div>
-              <Badge label={a.status} color={statusColor(a.status)} />
+              <div>
+                <p className="text-slate-800 font-bold">{a.name}</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">{employees.find(e => e.id === a.empId)?.role || 'Staff'}</p>
+              </div>
             </div>
-
-            {a.status !== 'Absent' ? (
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="bg-slate-50 border border-slate-100 rounded-lg p-2 text-center">
-                  <p className="text-slate-500 mb-0.5 font-medium">Punch In</p>
-                  <p className="text-emerald-700 font-bold">{a.punchIn || '—'}</p>
-                </div>
-                <div className="bg-slate-50 border border-slate-100 rounded-lg p-2 text-center">
-                  <p className="text-slate-500 mb-0.5 font-medium">Punch Out</p>
-                  <p className="text-amber-600 font-bold">{a.punchOut || 'Active'}</p>
-                </div>
-                <div className="bg-slate-50 border border-slate-100 rounded-lg p-2 text-center">
-                  <p className="text-slate-500 mb-0.5 font-medium">Travel</p>
-                  <p className="text-sky-600 font-bold">{a.travel} km</p>
-                </div>
+          )},
+          { label: 'Punch In/Out', render: a => (
+            <div className="text-xs">
+              <p className="text-emerald-700 font-bold">In: {a.punchIn || '—'}</p>
+              <p className="text-amber-600 font-bold">Out: {a.punchOut || 'Active'}</p>
+            </div>
+          )},
+          { label: 'Travel Tracking', render: a => (
+            <div className="w-48">
+              <div className="flex justify-between text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-bold">
+                <span>{a.travel} km</span><span>Max 350km</span>
               </div>
-            ) : (
-              <div className="bg-red-50 border border-red-100 rounded-lg p-3 text-center text-xs font-bold text-red-600">Not punched in today</div>
-            )}
-
-            {a.location && (
-              <div className="flex items-center gap-1.5 mt-3 text-xs text-slate-500 font-medium">
-                <MapPin size={12} className="text-indigo-500 flex-shrink-0" />
-                <span>{a.location}</span>
+              <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div className="h-1.5 rounded-full bg-gradient-to-r from-sky-400 to-indigo-500" style={{ width: `${Math.min(100, (a.travel / 350) * 100)}%` }} />
               </div>
-            )}
-
-            {a.travel > 0 && (
-              <div className="mt-3">
-                <div className="flex justify-between text-xs text-slate-500 font-medium mb-1.5">
-                  <span className="flex items-center gap-1"><Car size={11} className="text-sky-500"/> Travel</span>
-                  <span className="text-sky-700 font-bold">{a.travel} km</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-1.5 shadow-inner">
-                  <div className="h-1.5 rounded-full bg-gradient-to-r from-sky-400 to-indigo-500" style={{ width: `${Math.min(100, (a.travel / 350) * 100)}%` }} />
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+            </div>
+          )},
+          { label: 'Location', render: a => (
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 max-w-[150px] truncate">
+              <MapPin size={12} className="text-indigo-400 flex-shrink-0" />
+              <span className="truncate">{a.location || 'N/A'}</span>
+            </div>
+          )},
+          { label: 'Status', render: a => <Badge label={a.status} color={statusColor(a.status)}/> },
+        ]}
+        data={todayData}
+      />
 
       <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <h3 className="text-slate-800 font-bold mb-4">Travel Summary – Today</h3>

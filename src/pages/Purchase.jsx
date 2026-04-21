@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { purchases as initialPurchases, vendors, products } from '../data/dummyData';
 
@@ -89,33 +89,32 @@ const Purchase = () => {
         </select>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="border-b border-slate-100 bg-slate-50">
-              {['PO #','Date','Vendor','Product','Qty','Amount','GST','Total','Status','Payment'].map((h,i)=>(
-                <th key={i} className="text-left text-slate-500 text-xs font-semibold uppercase tracking-wider px-3 py-3 whitespace-nowrap">{h}</th>
-              ))}
-            </tr></thead>
-            <tbody>
-              {filtered.map(p=>(
-                <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-3 py-3 text-indigo-700 font-bold text-xs whitespace-nowrap">{p.id}</td>
-                  <td className="px-3 py-3 text-slate-500 text-xs whitespace-nowrap">{formatDate(p.date)}</td>
-                  <td className="px-3 py-3 text-slate-800 font-semibold whitespace-nowrap truncate max-w-[150px]">{p.vendorName}</td>
-                  <td className="px-3 py-3 text-slate-600 whitespace-nowrap truncate max-w-[160px]">{p.productName}</td>
-                  <td className="px-3 py-3 text-slate-700 text-center font-semibold whitespace-nowrap">{p.qty}</td>
-                  <td className="px-3 py-3 text-slate-700 whitespace-nowrap">{formatCurrency(p.amount)}</td>
-                  <td className="px-3 py-3 text-slate-400 text-xs whitespace-nowrap">{formatCurrency(p.gst)}</td>
-                  <td className="px-3 py-3 text-red-700 font-black whitespace-nowrap">{formatCurrency(p.total)}</td>
-                  <td className="px-3 py-3"><Badge label={p.status} color={statusColor(p.status)}/></td>
-                  <td className="px-3 py-3"><Badge label={p.paymentStatus} color={statusColor(p.paymentStatus)}/></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={[
+          { label: 'PO #', render: p => <span className="font-mono text-indigo-700 font-bold">{p.id}</span> },
+          { label: 'Vendor', render: p => (
+            <div>
+              <p className="text-slate-800 font-bold">{p.vendorName}</p>
+              <p className="text-slate-400 text-[10px] font-medium uppercase">{formatDate(p.date)}</p>
+            </div>
+          )},
+          { label: 'Product', render: p => (
+            <div className="max-w-[160px] truncate">
+              <p className="text-slate-700 font-medium truncate">{p.productName}</p>
+              <p className="text-[10px] text-slate-400">Qty: {p.qty}</p>
+            </div>
+          )},
+          { label: 'Total Payable', render: p => (
+            <div className="flex flex-col items-start">
+              <span className="text-red-700 font-black">{formatCurrency(p.total)}</span>
+              <span className="text-[10px] text-slate-400">Incl. Tax</span>
+            </div>
+          )},
+          { label: 'Status', render: p => <Badge label={p.status} color={statusColor(p.status)}/> },
+          { label: 'Payment', render: p => <Badge label={p.paymentStatus} color={statusColor(p.paymentStatus)}/> },
+        ]}
+        data={filtered}
+      />
 
       <Modal open={showForm} onClose={()=>setShowForm(false)} title="New Purchase Order" subtitle="Create a new purchase order from vendor" size="lg" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

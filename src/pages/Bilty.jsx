@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor } from '../components/UI';
+import { PageHeader, Badge, SearchBar, Btn, formatCurrency, formatDate, statusColor, DataTable } from '../components/UI';
 import Modal from '../components/Modal';
 import { bilties as initialBilties, salesOrders, customers } from '../data/dummyData';
 
@@ -77,36 +77,37 @@ const Bilty = () => {
         </select>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50">
-                {['Bilty #', 'Date', 'Sales Order', 'Customer', 'Transporter', 'LR Number', 'Dispatch Date', 'Delivery Date', 'Weight', 'Freight', 'Status'].map((h, i) => (
-                  <th key={i} className="text-left text-slate-500 text-xs font-semibold uppercase tracking-wider px-4 py-3 whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(b => (
-                <tr key={b.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 text-indigo-700 font-bold text-xs whitespace-nowrap">{b.id}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{formatDate(b.date)}</td>
-                  <td className="px-4 py-3 text-indigo-600 font-semibold whitespace-nowrap">{b.salesOrder}</td>
-                  <td className="px-4 py-3 text-slate-800 font-bold whitespace-nowrap truncate max-w-[150px]">{b.customer}</td>
-                  <td className="px-4 py-3 text-slate-600 whitespace-nowrap truncate max-w-[150px]">{b.transporter}</td>
-                  <td className="px-4 py-3 text-sky-600 font-mono font-bold text-xs whitespace-nowrap">{b.lrNo}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{formatDate(b.dispatchDate)}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{formatDate(b.deliveryDate)}</td>
-                  <td className="px-4 py-3 text-slate-500 font-medium whitespace-nowrap">{b.weight}</td>
-                  <td className="px-4 py-3 text-amber-700 font-black whitespace-nowrap">{formatCurrency(b.freight)}</td>
-                  <td className="px-4 py-3 whitespace-nowrap"><Badge label={b.status} color={statusColor(b.status)} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={[
+          { label: 'Bilty #', render: b => <span className="font-mono text-indigo-700 font-bold">{b.id}</span> },
+          { label: 'Customer / SO', render: b => (
+            <div>
+              <p className="text-slate-800 font-bold">{b.customer}</p>
+              <p className="text-indigo-600 text-[10px] font-mono leading-none">{b.salesOrder}</p>
+            </div>
+          )},
+          { label: 'Tracking', render: b => (
+            <div className="text-xs">
+              <p className="text-sky-600 font-bold font-mono uppercase leading-tight">{b.lrNo}</p>
+              <p className="text-slate-400 text-[10px] truncate max-w-[120px]">{b.transporter}</p>
+            </div>
+          )},
+          { label: 'Timeline', render: b => (
+            <div className="text-xs">
+              <p className="text-slate-500">Disp: {formatDate(b.dispatchDate)}</p>
+              <p className="text-emerald-600 font-bold">Del: {formatDate(b.deliveryDate) || '—'}</p>
+            </div>
+          )},
+          { label: 'Monetary', render: b => (
+            <div className="text-xs">
+              <p className="text-amber-700 font-black">{formatCurrency(b.freight)}</p>
+              <p className="text-slate-400 text-[10px]">{b.weight}</p>
+            </div>
+          )},
+          { label: 'Status', render: b => <Badge label={b.status} color={statusColor(b.status)}/> },
+        ]}
+        data={filtered}
+      />
       
       <Modal open={showForm} onClose={() => setShowForm(false)} title="Generate Dispatch Bilty" subtitle="Record LR number and transporter details" size="lg" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
